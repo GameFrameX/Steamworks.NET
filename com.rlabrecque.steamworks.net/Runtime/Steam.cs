@@ -11,7 +11,6 @@
 
 #if !DISABLESTEAMWORKS
 
-using Steamworks.CoreCLR;
 using System.Runtime.InteropServices;
 using IntPtr = System.IntPtr;
 
@@ -100,13 +99,9 @@ namespace Steamworks {
 				{
 					bool ret = CSteamAPIContext.Init();
 					if (ret) {
-#if NET8_0_OR_GREATER && STEAMWORKS_FEATURE_VALUETASK
-						ValueTaskDispatcher.Singleton.Initialize();
-#else
 						CallbackDispatcher.Initialize();
-
-#endif					
-					} else {
+					}
+					else {
 						initResult = ESteamAPIInitResult.k_ESteamAPIInitResult_FailedGeneric;
 						OutSteamErrMsg = "[Steamworks.NET] Failed to initialize CSteamAPIContext";
 					}
@@ -128,11 +123,7 @@ namespace Steamworks {
 			InteropHelp.TestIfPlatformSupported();
 			NativeMethods.SteamAPI_Shutdown();
 			CSteamAPIContext.Clear();
-#if NET8_0_OR_GREATER && STEAMWORKS_FEATURE_VALUETASK
-			ValueTaskDispatcher.Singleton.UnInitialize();
-#else
 			CallbackDispatcher.Shutdown();
-#endif
 		}
 
 		// SteamAPI_RestartAppIfNecessary ensures that your executable was launched through Steam.
@@ -191,11 +182,7 @@ namespace Steamworks {
 		// One alternative is to call SteamAPI_RunCallbacks from the main thread only,
 		// and call SteamAPI_ReleaseCurrentThreadMemory regularly on other threads.
 		public static void RunCallbacks() {
-#if NET8_0_OR_GREATER && STEAMWORKS_FEATURE_VALUETASK
-			ValueTaskDispatcher.Singleton.RunFrame(false);
-#else
 			CallbackDispatcher.RunFrame(false);
-#endif
 		}
 
 		//----------------------------------------------------------------------------------------------------------------------------------------------------------//
@@ -269,11 +256,7 @@ namespace Steamworks {
 				{
 					bool ret = CSteamGameServerAPIContext.Init();
 					if (ret) {
-#if NET8_0_OR_GREATER && STEAMWORKS_FEATURE_VALUETASK
-						ValueTaskDispatcher.Singleton.Initialize();
-#else
 						CallbackDispatcher.Initialize();
-#endif
 					}
 					else {
 						initResult = ESteamAPIInitResult.k_ESteamAPIInitResult_FailedGeneric;
@@ -299,19 +282,11 @@ namespace Steamworks {
 			InteropHelp.TestIfPlatformSupported();
 			NativeMethods.SteamGameServer_Shutdown();
 			CSteamGameServerAPIContext.Clear();
-#if NET8_0_OR_GREATER && STEAMWORKS_FEATURE_VALUETASK
-			ValueTaskDispatcher.Singleton.UnInitialize();
-#else
 			CallbackDispatcher.Shutdown();
-#endif
 		}
 
 		public static void RunCallbacks() {
-#if NET8_0_OR_GREATER && STEAMWORKS_FEATURE_VALUETASK
-			ValueTaskDispatcher.Singleton.RunFrame(true);
-#else
 			CallbackDispatcher.RunFrame(true);
-#endif
 		}
 
 		// Most Steam API functions allocate some amount of thread-local memory for
