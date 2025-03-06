@@ -11,12 +11,15 @@ using System.Threading.Tasks.Sources;
 #nullable enable
 
 namespace Steamworks.CoreCLR {
-	internal class ValueTaskCallResultSource(ulong slot) : IValueTaskSource<object> {
+	internal class ValueTaskCallResultSource(ulong slot, bool gameServer) : IValueTaskSource<object> {
 		private ConcurrentDictionary<short, CallResultInvocationState> stateStore = new();
 		internal ulong Slot { get; private set; } = slot;
+		public bool GameServer { get; private set; } = gameServer;
 
-		internal void Reset(ulong newSlot) {
+
+		internal void Reset(ulong newSlot, bool gameServer) {
 			Slot = newSlot;
+			GameServer = gameServer;
 		}
 
 		public event Action<ValueTaskCallResultSource>? IdleForRecycle;
